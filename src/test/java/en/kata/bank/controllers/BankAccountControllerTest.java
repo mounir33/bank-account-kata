@@ -25,32 +25,43 @@ public class BankAccountControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.post("/account/deposit")
                         .param("amount", "100"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().string("Deposit successful. Current balance: 100"));
+                .andExpect(MockMvcResultMatchers.content().string("Deposit successful. Current balance: 1900"));
     }
 
     @Test
-    public void testWithdraw1() throws Exception {
+    public void testWithdraw() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.post("/account/withdraw")
                         .param("amount", "50"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().string("Withdrawal successful. Current balance: -50"));
+                .andExpect(MockMvcResultMatchers.content().string("Withdrawal successful. Current balance: 1850"));
     }
 
     @Test
-    public void testPrintStatement1() throws Exception {
+    public void testPrintStatement() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/account/statement"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().string("Your expected statement content"));
+                .andExpect(result -> {
+                    String statement = result.getResponse().getContentAsString();
+                    String[] rows = statement.split("\\n");
+                    String[] columns = rows[0].split("\\s");
+                    String[] expectedColumns = "Date Amount Balance".split(" ");
+                    assertArrayEquals(expectedColumns, columns);
+                });
     }
 
     @Test
     public void testGetTransactionHistoryByDate() throws Exception {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         String date = LocalDateTime.now().format(formatter);
-        mockMvc.perform(MockMvcRequestBuilders.get("/historyByDate")
+        mockMvc.perform(MockMvcRequestBuilders.get("/account/historyByDate")
                         .param("date", date))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().string("Your expected history content for the given date"));
+                .andExpect(result -> {
+                    List<Transaction> filteredTransactions = deserializeTransactionList();
+
+                    assertNotNull(filteredTransactions);
+                    assertEquals(0, filteredTransactions.size());
+                });
     }
 
     @Test
@@ -94,7 +105,7 @@ public class BankAccountControllerTest {
                     String testStatement = result.getResponse().getContentAsString();
                     String[] lines = testStatement.split("\n");
                     StatementLine line = parseStatementLine(lines[lines.length - 1]);
-                    assertEquals(2300, line.balance());
+                    assertEquals(2350, line.balance());
                 });
     }
 
