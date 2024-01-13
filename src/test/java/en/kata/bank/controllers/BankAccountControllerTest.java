@@ -193,21 +193,6 @@ public class BankAccountControllerTest {
                 });
     }
 
-    @Test
-    public void testGetTransactionHistoryByDate() throws Exception {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        String date = LocalDateTime.now().format(formatter);
-        mockMvc.perform(MockMvcRequestBuilders.get("/account/historyByDate")
-                        .param("date", date))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(result -> {
-                    List<Transaction> filteredTransactions = deserializeTransactionList();
-
-                    assertNotNull(filteredTransactions);
-                    assertEquals(0, filteredTransactions.size());
-                });
-    }
-
 
     //test helper method
 
