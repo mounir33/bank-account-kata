@@ -30,7 +30,7 @@ public class BankAccountControllerTest {
 
     @Test
     public void testWithdraw1() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.post("/withdraw")
+        mockMvc.perform(MockMvcRequestBuilders.post("/account/withdraw")
                         .param("amount", "50"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().string("Withdrawal successful. Current balance: -50"));
@@ -38,7 +38,7 @@ public class BankAccountControllerTest {
 
     @Test
     public void testPrintStatement1() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/statement"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/account/statement"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().string("Your expected statement content"));
     }
